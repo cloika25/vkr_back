@@ -14,7 +14,7 @@ def login(request):
     data = json.loads(request.read())
     login = data['login']
     password = data['password']
-    response =  authService.authenticate(login, password)
+    response =  authService.authen(login, password)
     return Response(response)
 
 @api_view(['POST'])

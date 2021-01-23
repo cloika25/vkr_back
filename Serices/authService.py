@@ -6,7 +6,7 @@ def getAllUsers():
     allUsersSerial = UserSerializer(allUsers, many= True)
     return allUsersSerial
 
-def authentificate(login, password):
+def authen(login, password):
     user = authenticate(username = login, password = password)
     result = { 'username': user.username }
     return result
