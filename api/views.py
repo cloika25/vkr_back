@@ -37,4 +37,11 @@ def create_event(request):
     DateStart = data['DateStart']
     DateClose = data['DateClose']
     response = eventService.createEvent(FullName, DateStart, DateClose)
-    return Response(response)
+    return Response(data=response['data'], status=response['status'])
+
+@api_view(['POST'])
+def remove_event(request):
+    data = json.loads(request.read())
+    id = data['id']
+    response = eventService.removeEvent(id)
+    return Response(data=response['data'], status=response['status'])

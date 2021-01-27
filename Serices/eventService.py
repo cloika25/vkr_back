@@ -3,13 +3,10 @@ from Serializers.Events import *
 def getAllEvents():
     result = Event.objects.all()
     resultSerial = EventSerializer(result, many= True)
-    return resultSerial
+    return resultSerial.data
 
 def createEvent(name, dateStart, dateClose = ''):
-    responce = {
-        'data': '',
-        'code': ''
-    }
+    responce = {}
     try:
         newEvent = Event
         if dateClose == '':
@@ -18,8 +15,21 @@ def createEvent(name, dateStart, dateClose = ''):
             newEvent = Event.objects.create(FullName=name, DateStart=dateStart, DateClose=dateClose)
         newEvent.save()
         responce['data'] = f"Мероприятие {name} успешно создано"
-        responce['code'] = 200
+        responce['status'] = 200
     except Exception:
         responce['data'] = f"Произошла ошибка при создании мероприятия {name}"
-        responce['code'] = 400
+        responce['status'] = 400
+    return responce
+
+def removeEvent(id):
+    responce = {}
+    try:
+        tempEvent = Event.objects.filter(id = id)
+        name = tempEvent[0].FullName
+        tempEvent.delete()
+        responce['data'] = f'{name} успешно удалено'
+        responce['status'] = 200
+    except Exception:
+        responce['status'] = 404
+        responce['data'] = "Произошла ошибка при удалении мероприятия"
     return responce
