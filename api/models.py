@@ -13,3 +13,4 @@ class Event(models.Model):
     FullName = models.CharField(max_length=50)
     DateStart = models.DateTimeField(default=None)
     DateClose = models.DateTimeField(blank=True, null=True)
+    AuthorUserId = models.BigIntegerField('User', default=None)

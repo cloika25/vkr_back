@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from Serializers.Users import *
 
 def getAllUsers():
@@ -6,24 +6,26 @@ def getAllUsers():
     allUsersSerial = UserSerializer(allUsers, many= True)
     return allUsersSerial
 
-def authen(login, password):
-    user = authenticate(username = login, password = password)
+def authen(username, password, request):
+    user = authenticate(username = username, password = password)
+    if user is not None:
+        login(request, user)
     result = { 'username': user.username }
     return result
 
-def registration(login, password):
+def registration(username, password):
     result = {
         'data': '',
         'code': '',
     }
     try:
-        user = User.objects.filter(username=login)
+        user = User.objects.filter(username=username)
         if user:
             print(Exception.__class__)
             result['data'] = "Данный логин уже используется"
             result['code'] = 400
         else:
-            user = User.objects.create_user(username=login, password= password)
+            user = User.objects.create_user(username=username, password= password)
             user.save()
             result['data'] = "Пользователь создан"
             result['code'] = 200

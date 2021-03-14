@@ -5,6 +5,18 @@ def getAllEvents():
     resultSerial = EventSerializer(result, many= True)
     return resultSerial.data
 
+def getEvent(id):
+    responce = {}
+    try:
+        event = Event.objects.filter(id= id)
+        eventSer = EventSerializer(event, many= True)
+        responce['data'] = eventSer.data
+        responce['status'] = 200
+    except Exception:
+        responce['data'] = f"Произошла ошибка при получении мероприятия"
+        responce['status'] = 400
+    return responce
+
 def createEvent(name, dateStart, dateClose = ''):
     responce = {}
     try:
