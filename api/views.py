@@ -52,12 +52,11 @@ def remove_event(request):
 @api_view(['POST'])
 def update_event(request):
     data = json.loads(request.read())
-    pass
+    return Response()
 
 @api_view(['POST'])
 def get_event(request):
     data = json.loads(request.read())
     id = data['id']
-    token = Token.objects.create(user = ... )
     response = eventService.getEvent(id)
     return Response(data=response['data'], status=response['status'])
