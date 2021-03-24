@@ -1,8 +1,14 @@
 from Serializers.Events import *
+from rest_framework.response import Response
 
 def getAllEvents():
     result = Event.objects.all()
-    resultSerial = EventSerializer(result, many= True)
+    resultSerial = EventSerializer(result, many=True)
+    return resultSerial.data
+
+def getUserEvents(user):
+    result = Event.objects.filter(AuthorUserId=user.id)
+    resultSerial = EventSerializer(result, many=True)
     return resultSerial.data
 
 def getEvent(id):
@@ -17,14 +23,13 @@ def getEvent(id):
         responce['status'] = 400
     return responce
 
-def createEvent(name, dateStart, dateClose = ''):
+def createEvent(user, name, dateStart, dateClose = ''):
     responce = {}
     try:
-        newEvent = Event
         if dateClose == '':
-            newEvent = Event.objects.create(FullName=name, DateStart=dateStart)
+            newEvent = Event.objects.create(AuthorUserId=user.id, FullName=name, DateStart=dateStart)
         else:
-            newEvent = Event.objects.create(FullName=name, DateStart=dateStart, DateClose=dateClose)
+            newEvent = Event.objects.create(AuthorUserId=user.id, FullName=name, DateStart=dateStart, DateClose=dateClose)
         newEvent.save()
         responce['data'] = f"Мероприятие {name} успешно создано"
         responce['status'] = 200
@@ -32,6 +37,23 @@ def createEvent(name, dateStart, dateClose = ''):
         responce['data'] = f"Произошла ошибка при создании мероприятия {name}"
         responce['status'] = 400
     return responce
+
+def updateEvent(eventId, body):
+    event = Event.objects.get(id = eventId)
+    response = Response()
+    if event:
+        try:
+            event.FullName = body["FullName"]
+            event.DateStart = body["DateStart"]
+            event.DateClose = body["DateClose"]
+            event.save()
+        except Exception:
+            response.status_code = 400
+            response.data = "Произошла ошибка при обновлении мероприятия"
+    else:
+        response.status_code = 404
+        response.data = "Мероприятие не найдено"
+    return response
 
 def removeEvent(id):
     responce = {}

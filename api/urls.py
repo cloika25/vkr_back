@@ -4,6 +4,9 @@ from . import views
 urlpatterns=[
     path('allUsers', views.allUsers),
     path('events', views.all_events),
+    path('my_events', views.my_events),
+    path('cabinet', views.getPersonalData),
+    path('editPersonalData', views.editPersonalData),
     path('login', views.login),
     path('registration', views.registration),
     path('create_event', views.create_event),
