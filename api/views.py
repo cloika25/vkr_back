@@ -63,13 +63,10 @@ def remove_event(request):
     response = eventService.removeEvent(id)
     return Response(data=response['data'], status=response['status'])
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def update_event(request):
-    data = json.loads(request.read())
-    eventId = data["eventId"]
-    body = data["body"]
-
-    response = eventService.updateEvent(eventId, body)
+    data = request.data
+    response = eventService.updateEvent(data)
     return response
 
 @api_view(['POST'])

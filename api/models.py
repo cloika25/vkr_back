@@ -17,8 +17,9 @@ class Event(models.Model):
     DateClose = models.DateTimeField(blank=True, null=True)
     AuthorUserId = models.BigIntegerField(null=True)
 
-    PhotoPreview = models.ImageField(upload_to="events", null=True)
-    PhotoMain = models.ImageField(upload_to="events", null=True)
+    PhotoPreview = models.ImageField(upload_to="", null=True)
+    PhotoMain = models.ImageField(upload_to="", null=True)
+    Description = models.TextField(default=None, null=True)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)

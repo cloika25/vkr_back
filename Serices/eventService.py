@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 def getAllEvents():
     result = Event.objects.all()
-    resultSerial = EventSerializer(result, many=True)
+    resultSerial = ShortEventSerializer(result, many=True)
     return resultSerial.data
 
 def getUserEvents(user):
@@ -38,14 +38,17 @@ def createEvent(user, name, dateStart, dateClose = ''):
         responce['status'] = 400
     return responce
 
-def updateEvent(eventId, body):
-    event = Event.objects.get(id = eventId)
+def updateEvent(data):
+    event = Event.objects.get(id = data['Id'])
     response = Response()
     if event:
         try:
-            event.FullName = body["FullName"]
-            event.DateStart = body["DateStart"]
-            event.DateClose = body["DateClose"]
+            event.FullName = data['FullName']
+            event.DateStart = data["DateStart"]
+            event.DateClose = data["DateClose"]
+            event.PhotoPreview = data['PhotoPreview']
+            event.PhotoMain = data['PhotoMain']
+            event.Description = data['Description']
             event.save()
         except Exception:
             response.status_code = 400
