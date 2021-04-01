@@ -9,4 +9,4 @@ class EventSerializer(serializers.ModelSerializer):
 class ShortEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = "FullName", "DateStart", "DateClose", "PhotoPreview"
+        fields = "id", "FullName", "DateStart", "DateClose", "PhotoPreview", "AuthorUserId"

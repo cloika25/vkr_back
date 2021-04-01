@@ -40,7 +40,7 @@ def registration(request):
 @api_view(['GET'])
 def all_events(request):
     response = eventService.getAllEvents()
-    return Response(response)
+    return response
 
 @api_view(['GET'])
 def my_events(request):
@@ -75,3 +75,28 @@ def get_event(request):
     id = data['id']
     response = eventService.getEvent(id)
     return Response(data=response['data'], status=response['status'])
+
+@api_view(['POST'])
+def getName(request):
+    data = request.data['id']
+    response = authService.getName(data)
+    return response
+
+@api_view(['GET'])
+def getAvatar(request):
+    userId = request.user.id
+    response = authService.getAvatar(userId)
+    return response
+
+@api_view(['POST'])
+def updateAvatar(request):
+    photo = request.data['photo']
+    userId = request.user.id
+    response = authService.updateAvatar(photo, userId)
+    return response
+
+@api_view(['GET'])
+def removeAvatar(request):
+    userId = request.user.id
+    response = authService.removeAvatar(userId)
+    return response

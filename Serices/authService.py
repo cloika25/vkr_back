@@ -22,14 +22,32 @@ def getPersonalData(user):
         profile = Profile.objects.get(user_id=user.id)
     else:
         profile = profile.first()
+    profile = CabinetSerializer(profile).data
     response.data = {
-        "firstName": user.first_name,
-        "lastName": user.last_name,
-        "email": user.email,
-        "genderId": profile.genderId,
-        "birthDate": profile.birth_date
+        "firstName": profile["user"]["first_name"],
+        "lastName": profile["user"]["last_name"],
+        "email": profile["user"]["email"],
+        "genderId": profile["genderId"],
+        "birthDate": profile["birth_date"],
+        "photo": profile["photo"],
     }
     return response
+
+def getName(data):
+    response = Response()
+    try:
+        profile = Profile.objects.get(user_id=data)
+        response.data = {
+            "firstName": profile.user.first_name,
+            "lastName": profile.user.last_name,
+            "photo": profile.photo.name
+        }
+        response.status_code = 200
+        return response
+    except:
+        response.data = "Произошла ошибка получение данных пользователя"
+        response.status_code = 400
+        return response
 
 def editPersonalData(user, body):
     response = Response()
@@ -49,6 +67,47 @@ def editPersonalData(user, body):
         response.status_code = 400
         response.data = "Произошла ошибка при изменении персональных данных"
         return response
+
+def getAvatar(userId):
+    response = Response()
+    try:
+        user = Profile.objects.get(user_id=userId)
+        response.data = user.photo.name
+        response.status_code = 200
+    except:
+        response.data = "Произошла ошибка при получаении аватара"
+        response.status_code = 400
+    return response
+
+def updateAvatar(photo, userId):
+    response = Response()
+    try:
+        if (photo != "undefined"):
+            profile = Profile.objects.get(user_id=userId)
+            profile.photo = photo
+            profile.save()
+            response.data = "Успешно обновлено"
+            response.status_code = 200
+        else:
+            response.data = "Пришел undefined"
+            response.status_code = 400
+    except:
+        response.data["Произошла ошибка при обновлении"]
+        response.status_code = 400
+    return response
+
+def removeAvatar(userId):
+    response = Response()
+    try:
+        profile = Profile.objects.get(user_id=userId)
+        profile.photo = ''
+        profile.save()
+        response.data = "Все ок"
+        response.status_code = 200
+    except:
+        response.data = "Произошла ошибка при удалении аватара"
+        response.data = 400
+    return response
 
 def authen(username, password, request):
     user = authenticate(username = username, password = password)

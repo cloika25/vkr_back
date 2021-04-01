@@ -1,10 +1,32 @@
 from Serializers.Events import *
+from Serializers.Users import ShortProfileSerialiser
+from api.models import Profile
 from rest_framework.response import Response
 
+from back import settings
+
+
 def getAllEvents():
-    result = Event.objects.all()
-    resultSerial = ShortEventSerializer(result, many=True)
-    return resultSerial.data
+    response = Response()
+    try:
+        events = Event.objects.all()
+        eventsSerial = ShortEventSerializer(events, many=True).data
+        for event in eventsSerial:
+            tempProfile = Profile.objects.get(user_id=event["AuthorUserId"])
+            if (tempProfile):
+                tempProfile = ShortProfileSerialiser(tempProfile)
+                tempProfile = tempProfile.data
+                event['author'] ={
+                    "firstName": tempProfile["user"]["first_name"],
+                    "lastName": tempProfile["user"]["last_name"],
+                    "photo": tempProfile["photo"]
+                }
+        response.data = eventsSerial
+        response.status_code = 200
+        return response
+    except:
+        response.data = "Произошла ошибка при получении мероприятий"
+        response.status_code = 400
 
 def getUserEvents(user):
     result = Event.objects.filter(AuthorUserId=user.id)
@@ -15,9 +37,13 @@ def getEvent(id):
     responce = {}
     try:
         event = Event.objects.filter(id= id)
-        eventSer = EventSerializer(event, many= True)
-        responce['data'] = eventSer.data
-        responce['status'] = 200
+        if (event.count()):
+            eventSer = EventSerializer(event, many= True)
+            responce['data'] = eventSer.data
+            responce['status'] = 200
+        else:
+            responce['data'] = 'Мероприятие не найдено'
+            responce['status'] = 404
     except Exception:
         responce['data'] = f"Произошла ошибка при получении мероприятия"
         responce['status'] = 400
@@ -46,8 +72,10 @@ def updateEvent(data):
             event.FullName = data['FullName']
             event.DateStart = data["DateStart"]
             event.DateClose = data["DateClose"]
-            event.PhotoPreview = data['PhotoPreview']
-            event.PhotoMain = data['PhotoMain']
+            if (settings.MEDIA_URL + event.PhotoPreview.name != data['PhotoPreview']):
+                event.PhotoPreview = data['PhotoPreview']
+            if (settings.MEDIA_URL + event.PhotoMain.name != data['PhotoMain']):
+                event.PhotoMain = data['PhotoMain']
             event.Description = data['Description']
             event.save()
         except Exception:
