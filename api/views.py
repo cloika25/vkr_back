@@ -21,22 +21,6 @@ def editPersonalData(request):
     response = authService.editPersonalData(request.user, body)
     return response
 
-@api_view(['POST'])
-def login(request):
-    data = json.loads(request.read())
-    login = data['login']
-    password = data['password']
-    response =  authService.authen(login, password, request)
-    return Response(response)
-
-@api_view(['POST'])
-def registration(request):
-    data = json.loads(request.read())
-    login = data['login']
-    password = data['password']
-    response = authService.registration(login, password)
-    Response(response)
-
 @api_view(['GET'])
 def all_events(request):
     response = eventService.getAllEvents()
@@ -54,14 +38,14 @@ def create_event(request):
     DateStart = data['DateStart']
     DateClose = data['DateClose']
     response = eventService.createEvent(request.user, FullName, DateStart, DateClose)
-    return Response(data=response['data'], status=response['status'])
+    return response
 
 @api_view(['POST'])
 def remove_event(request):
     data = json.loads(request.read())
     id = data['id']
     response = eventService.removeEvent(id)
-    return Response(data=response['data'], status=response['status'])
+    return response
 
 @api_view(['PUT'])
 def update_event(request):
@@ -74,7 +58,15 @@ def get_event(request):
     data = json.loads(request.read())
     id = data['id']
     response = eventService.getEvent(id)
-    return Response(data=response['data'], status=response['status'])
+    return response
+
+@api_view(['POST'])
+def getEventForEdit(request):
+    data = json.loads(request.read())
+    id = data['id']
+    userId = request.user.id
+    response = eventService.getEventForEdit(id, userId)
+    return response
 
 @api_view(['POST'])
 def getName(request):

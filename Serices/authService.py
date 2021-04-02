@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from Serializers.Users import *
 from rest_framework.response import Response
+from .util import fillResponse
 
 def getAllUsers():
     allUsers = User.objects.all()
@@ -23,7 +24,7 @@ def getPersonalData(user):
     else:
         profile = profile.first()
     profile = CabinetSerializer(profile).data
-    response.data = {
+    body = {
         "firstName": profile["user"]["first_name"],
         "lastName": profile["user"]["last_name"],
         "email": profile["user"]["email"],
@@ -31,22 +32,22 @@ def getPersonalData(user):
         "birthDate": profile["birth_date"],
         "photo": profile["photo"],
     }
+    response = fillResponse(response, body, 200)
     return response
 
 def getName(data):
     response = Response()
     try:
         profile = Profile.objects.get(user_id=data)
-        response.data = {
+        body = {
             "firstName": profile.user.first_name,
             "lastName": profile.user.last_name,
             "photo": profile.photo.name
         }
-        response.status_code = 200
+        response = fillResponse(response, body, 200)
         return response
     except:
-        response.data = "Произошла ошибка получение данных пользователя"
-        response.status_code = 400
+        response = fillResponse(response, "Произошла ошибка получение данных пользователя", 400)
         return response
 
 def editPersonalData(user, body):
@@ -61,22 +62,19 @@ def editPersonalData(user, body):
         tempProf.birth_date = body['birthDate']
         tempUser.save()
         tempProf.save()
-        response.status_code = 200
+        response = fillResponse(response, "Персональные данные успешно обновлены", 200)
         return response
     except Exception:
-        response.status_code = 400
-        response.data = "Произошла ошибка при изменении персональных данных"
+        response = fillResponse(response, "Произошла ошибка при изменении персональных данных", 400)
         return response
 
 def getAvatar(userId):
     response = Response()
     try:
         user = Profile.objects.get(user_id=userId)
-        response.data = user.photo.name
-        response.status_code = 200
+        response = fillResponse(response, user.photo.name, 200)
     except:
-        response.data = "Произошла ошибка при получаении аватара"
-        response.status_code = 400
+        response = fillResponse(response, "Произошла ошибка при получаении аватара", 400)
     return response
 
 def updateAvatar(photo, userId):
@@ -86,14 +84,11 @@ def updateAvatar(photo, userId):
             profile = Profile.objects.get(user_id=userId)
             profile.photo = photo
             profile.save()
-            response.data = "Успешно обновлено"
-            response.status_code = 200
+            response = fillResponse(response, "Успешно обновлено", 200)
         else:
-            response.data = "Пришел undefined"
-            response.status_code = 400
+            response = fillResponse(response, "Пришел undefined", 400)
     except:
-        response.data["Произошла ошибка при обновлении"]
-        response.status_code = 400
+        response = fillResponse(response, "Произошла ошибка при обновлении", 400)
     return response
 
 def removeAvatar(userId):
@@ -102,38 +97,7 @@ def removeAvatar(userId):
         profile = Profile.objects.get(user_id=userId)
         profile.photo = ''
         profile.save()
-        response.data = "Все ок"
-        response.status_code = 200
+        response = fillResponse(response, "Все ок", 200)
     except:
-        response.data = "Произошла ошибка при удалении аватара"
-        response.data = 400
+        response = fillResponse(response, "Произошла ошибка при удалении аватара", 400)
     return response
-
-def authen(username, password, request):
-    user = authenticate(username = username, password = password)
-    if user is not None:
-        login(request, user)
-    result = { 'username': user.username }
-    return result
-
-def registration(username, password):
-    result = {
-        'data': '',
-        'code': '',
-    }
-    try:
-        user = User.objects.filter(username=username)
-        if user:
-            print(Exception.__class__)
-            result['data'] = "Данный логин уже используется"
-            result['code'] = 400
-        else:
-            user = User.objects.create_user(username=username, password= password)
-            user.save()
-            result['data'] = "Пользователь создан"
-            result['code'] = 200
-    except Exception:
-        result['data'] = "Что-то пошло не так"
-        result['code'] = 400
-
-    return result
