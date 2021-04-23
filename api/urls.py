@@ -1,19 +1,43 @@
 from django.urls import path
 from . import views
 
-urlpatterns=[
+urlpatterns = [
     path('allUsers', views.allUsers),
-    path('events', views.all_events),
-    path('my_events', views.my_events),
+    # PersonalData
     path('cabinet', views.getPersonalData),
+    path('editPersonalData', views.editPersonalData),
+    path('getName', views.getName),
+    # Events
+    path('events', views.allEvents),
+    path('my_events', views.myEvents),
+    path('create_event', views.createEvent),
+    path('update_event', views.updateEvent),
+    path('remove_event', views.removeEvent),
+    path('event', views.getEvent),
+    path('eventForEdit', views.getEventForEdit),
+    # Avatar
     path('avatar', views.getAvatar),
     path('updateAvatar', views.updateAvatar),
     path('removeAvatar', views.removeAvatar),
-    path('editPersonalData', views.editPersonalData),
-    path('getName', views.getName),
-    path('create_event', views.create_event),
-    path('remove_event', views.remove_event),
-    path('update_event', views.update_event),
-    path('event', views.get_event),
-    path('eventForEdit', views.getEventForEdit),
+    # Stages
+    path('stages', views.getStages),
+    path('createStage', views.createStage),
+    path('updateStage', views.updateStage),
+    path('removeStage', views.removeStage),
+    # AdditionalFields
+    path('getFields', views.getFormats),
+    path('addFields', views.addFields),
+    path('updateFields', views.updateFields),
+
+    # Registrations
+    path('registrationUser', views.registerUserToEvent),
+    path('getMyRegistrations', views.getAllRegistrations),
+
+    # Analytics
+    path('getParticipants', views.getParticipants),
+    path('getListParticipants', views.getListParticipants),
+    path('getAnalytics', views.getAnalytics),
+
+    # Utils
+    path('getFormats', views.getFormats)
 ]
