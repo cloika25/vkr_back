@@ -44,7 +44,7 @@ def createStage(data):
 def updateStage(data):
     response = Response()
     try:
-        tmpStage = Stage.objects.get(id = data["StageId"])
+        tmpStage = Stage.objects.get(id=data["StageId"])
         if (tmpStage):
             dateStart = make_aware(datetime.strptime(data["DateStart"], '%Y-%m-%dT%H:%M:%S'))
             dateEnd = make_aware(datetime.strptime(data["DateEnd"], '%Y-%m-%dT%H:%M:%S'))
@@ -68,8 +68,8 @@ def updateStage(data):
 def removeStage(eventId, stageId):
     response = Response()
     try:
-        stage = Stage.objects.get(id = stageId)
-        event = Event.objects.get(id = eventId)
+        stage = Stage.objects.get(id=stageId)
+        event = Event.objects.get(id=eventId)
         if (stage.EventId == event):
             stage.delete()
             response = fillResponse(response, "Этап успешно удален", 200)
@@ -90,20 +90,24 @@ def getFormats():
         response = fillResponse(response, "Произошла ошибка при получении форматов этапов", 400)
     return response
 
+
 def getFields(stageId):
     response = Response()
     pass
 
+
 def addFields(stageId, fields):
     pass
 
+
 def updateFields(stageId, fields):
-    response = Response()
-    try:
-        stage= Stage.objects.get(id = stageId)
-        stage.Fields = fields
-        stage.save()
-        response = fillResponse(response, "Дополнительные поля успешно обновлены", 200)
-    except:
-        pass
-    return response
+    """
+    Обновление дополнительных полей регистрации на этап
+    :param stageId:
+    :param fields:
+    :return:
+    """
+    stage = Stage.objects.get(id=stageId)
+    stage.Fields = fields
+    stage.save()
+    return "Дополнительные поля успешно обновлены", 200

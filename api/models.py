@@ -24,6 +24,9 @@ class Stage(models.Model):
     EventId = models.ForeignKey('Event', on_delete=models.CASCADE, default=1)
     Fields = JSONField(null=True)
 
+    def __str__(self):
+        return self.StageName
+
 
 class Event(models.Model):
     FullName = models.CharField(max_length=50)
@@ -35,6 +38,9 @@ class Event(models.Model):
     PhotoMain = models.ImageField(upload_to="events/main", null=True)
     Description = models.TextField(default=None, null=True)
 
+    def __str__(self):
+        return self.FullName
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -44,3 +50,6 @@ class Profile(models.Model):
 
     def getAge(self):
         return (date.today() - self.birth_date).year
+
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name

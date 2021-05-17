@@ -25,8 +25,6 @@ urlpatterns = [
     path('updateStage', views.updateStage),
     path('removeStage', views.removeStage),
     # AdditionalFields
-    path('getFields', views.getFormats),
-    path('addFields', views.addFields),
     path('updateFields', views.updateFields),
 
     # Registrations

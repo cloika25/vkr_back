@@ -3,10 +3,12 @@ from Serializers.Users import *
 from rest_framework.response import Response
 from .util import fillResponse
 
+
 def getAllUsers():
     allUsers = User.objects.all()
-    allUsersSerial = UserSerializer(allUsers, many= True)
+    allUsersSerial = UserSerializer(allUsers, many=True)
     return allUsersSerial
+
 
 def createProfile(user):
     try:
@@ -14,6 +16,7 @@ def createProfile(user):
         newProfile.save()
     except Exception:
         print('error while creating profile')
+
 
 def getPersonalData(user):
     response = Response()
@@ -28,12 +31,14 @@ def getPersonalData(user):
         "firstName": profile["user"]["first_name"],
         "lastName": profile["user"]["last_name"],
         "email": profile["user"]["email"],
+        "username": profile["user"]["username"],
         "genderId": profile["genderId"],
         "birthDate": profile["birth_date"],
         "photo": profile["photo"],
     }
     response = fillResponse(response, body, 200)
     return response
+
 
 def getName(data):
     response = Response()
@@ -50,23 +55,19 @@ def getName(data):
         response = fillResponse(response, "Произошла ошибка получение данных пользователя", 400)
         return response
 
+
 def editPersonalData(user, body):
-    response = Response()
-    try:
-        tempUser = User.objects.get(id = user.id)
-        tempUser.first_name = body['firstName']
-        tempUser.last_name = body['lastName']
-        tempUser.email = body['email']
-        tempProf = Profile.objects.get(user_id= user.id)
-        tempProf.genderId = body['genderId']
-        tempProf.birth_date = body['birthDate']
-        tempUser.save()
-        tempProf.save()
-        response = fillResponse(response, "Персональные данные успешно обновлены", 200)
-        return response
-    except Exception:
-        response = fillResponse(response, "Произошла ошибка при изменении персональных данных", 400)
-        return response
+    tempUser = User.objects.get(id=user.id)
+    tempUser.first_name = body['firstName']
+    tempUser.last_name = body['lastName']
+    tempUser.email = body['email']
+    tempProf = Profile.objects.get(user_id=user.id)
+    tempProf.genderId = body['genderId']
+    tempProf.birth_date = body['birthDate']
+    tempUser.save()
+    tempProf.save()
+    return "Персональные данные успешно обновлены", 200
+
 
 def getAvatar(userId):
     response = Response()
@@ -76,6 +77,7 @@ def getAvatar(userId):
     except:
         response = fillResponse(response, "Произошла ошибка при получаении аватара", 400)
     return response
+
 
 def updateAvatar(photo, userId):
     response = Response()
@@ -90,6 +92,7 @@ def updateAvatar(photo, userId):
     except:
         response = fillResponse(response, "Произошла ошибка при обновлении", 400)
     return response
+
 
 def removeAvatar(userId):
     response = Response()
