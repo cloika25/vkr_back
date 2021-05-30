@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from api.models import RegistrationsModal
 from .Events import ShortEventSerializer
-from .Stages import StageSerializer, FormatStagesSerializer
-from .Users import CabinetSerializer
+from .Stages import StageSerializer
+from .Users import ProfileSerializer
 
 
 class ListParticipants(serializers.ModelSerializer):
-    UserId = CabinetSerializer(read_only=True)
+    UserId = ProfileSerializer(read_only=True)
     StageId = StageSerializer(read_only=True)
     EventId = ShortEventSerializer(read_only=True)
 

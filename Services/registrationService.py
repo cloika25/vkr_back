@@ -4,15 +4,15 @@ from Serializers.RegistrationModels import ListParticipants
 import datetime
 
 
-def userRegistratedOnEvent(eventId, userId):
-    result = RegistrationsModal.objects.filter(UserId=userId, EventId=eventId).count()
+def userRegistratedOnEvent(stageId, userId):
+    result = RegistrationsModal.objects.filter(UserId=userId, StageId=stageId).count()
     return result
 
 
 def registerUser(data, user):
     stageId = data['StageId']
     eventId = data['EventId']
-    if (not userRegistratedOnEvent(userId=user.id, eventId=eventId)):
+    if (not userRegistratedOnEvent(userId=user.id, stageId=stageId)):
         event = Event.objects.get(id=eventId)
         stage = Stage.objects.get(id=stageId)
         tempFields = data['Fields']

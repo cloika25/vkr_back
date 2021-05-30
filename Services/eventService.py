@@ -125,6 +125,6 @@ def removeEvent(id):
 def checkAuthor(eventId, userId):
     try:
         event = Event.objects.get(id=eventId)
-        return event.AuthorUserId == userId
+        return event.AuthorUserId_id == userId
     except:
         return False

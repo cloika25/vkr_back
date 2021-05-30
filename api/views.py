@@ -1,7 +1,9 @@
 import json
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, RetrieveModelMixin, \
+    DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -11,9 +13,155 @@ import Services.registrationService as registrationService
 import Services.stagesService as stageService
 from Services.util import fillResponse
 
-from models import Event
-from Serializers import ShortEventSerializer
+from .models import Event, Profile, RegistrationsModal, Stage
+from Serializers.Events import ShortEventSerializer, EventSerializer
+from Serializers.Users import ProfileSerializer
+from Serializers.RegistrationModels import ListParticipants
+from Serializers.Stages import StageSerializer
 
+class EventsViews(GenericAPIView, ListModelMixin, CreateModelMixin):
+    queryset = Event.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ShortEventSerializer
+        else:
+            return EventSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение всех мероприятий
+
+        ShortEventSerializer
+        """
+        self.serializer_class = ShortEventSerializer
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Создание мероприятия
+
+        EventSerializer
+        """
+        self.serializer_class = EventSerializer
+        return self.create(request, *args, **kwargs)
+
+class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+    lookup_field = "id"
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение меропрития
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Обновление мероприятия
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Удаление мероприятия
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.destroy(request, *args, **kwargs)
+
+class ProfileView(GenericAPIView, ListModelMixin):
+    serializer_class = ProfileSerializer
+    def get_queryset(self):
+        queryset = Profile.objects.filter(user = self.request.user.id)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение профиля
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.list(self, request, *args, **kwargs)
+
+class ParticipantsView(GenericAPIView, ListModelMixin):
+    serializer_class = ListParticipants
+
+    def get_queryset(self):
+        queryset = RegistrationsModal.objects.filter(EventId = self.request.query_params.get('EventId'))
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение списка участников
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.list(self, request, *args, **kwargs)
+
+class StagesView(GenericAPIView, ListModelMixin, CreateModelMixin):
+    serializer_class = StageSerializer
+
+    def get_queryset(self):
+        queryset = Stage.objects.filter(EventId_id = self.request.query_params.get('EventId'))
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение списка этапов мероприятия
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.list(self, request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Создание этапа
+
+        EventSerializer
+        """
+        return self.create(request, *args, **kwargs)
+
+class UserRegistrationsView(GenericAPIView, ListModelMixin):
+    serializer_class = ListParticipants
+
+    def get_queryset(self):
+        queryset = RegistrationsModal.objects.filter(UserId=self.request.user.id)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        """
+        Получение списка всех регистраций пользователя
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return self.list(self, request, *args, **kwargs)
 
 @api_view(['GET'])
 def allUsers(request):
@@ -82,9 +230,6 @@ def allEvents(request):
     response = eventService.getAllEvents()
     return response
 
-class EventViews(RetrieveUpdateAPIView):
-    queryset = Event.objects.all()
-    serializer_class = ShortEventSerializer
 
 @api_view(['GET'])
 def myEvents(request):
@@ -96,63 +241,6 @@ def myEvents(request):
     """
     response = eventService.getUserEvents(request.user)
     return Response(response)
-
-
-@api_view(['POST'])
-def createEvent(request):
-    """
-    Создание мероприятия
-
-    :param request:
-    :return:
-    """
-    data = json.loads(request.read())
-    FullName = data['FullName']
-    DateStart = data['DateStart']
-    DateClose = data['DateClose']
-    response = eventService.createEvent(request.user, FullName, DateStart, DateClose)
-    return response
-
-
-@api_view(['POST'])
-def removeEvent(request):
-    """
-    Удаление мероприятия
-
-    :param request:
-    :return:
-    """
-    data = json.loads(request.read())
-    id = data['id']
-    response = eventService.removeEvent(id)
-    return response
-
-
-@api_view(['PUT'])
-def updateEvent(request):
-    """
-    Обновление данных мероприятия
-
-    :param request:
-    :return:
-    """
-    data = request.data
-    response = eventService.updateEvent(data)
-    return response
-
-
-@api_view(['POST'])
-def getEvent(request):
-    """
-    Получить описание мероприятия
-
-    :param request:
-    :return:
-    """
-    data = json.loads(request.read())
-    id = data['id']
-    response = eventService.getEvent(id)
-    return response
 
 
 @api_view(['POST'])

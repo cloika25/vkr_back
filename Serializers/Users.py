@@ -7,15 +7,20 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+class ShortUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'username']
+
 class ShortProfileSerialiser(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = ShortUserSerializer(read_only=True)
 
     class Meta:
         model = Profile
         fields = "user", "photo"
 
-class CabinetSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+class ProfileSerializer(serializers.ModelSerializer):
+    user = ShortUserSerializer(read_only=True)
 
     class Meta:
         model = Profile

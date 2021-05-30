@@ -32,10 +32,10 @@ class Event(models.Model):
     FullName = models.CharField(max_length=50)
     DateStart = models.DateTimeField(default=None)
     DateClose = models.DateTimeField(blank=True, null=True)
-    AuthorUserId = models.BigIntegerField(null=True)
+    AuthorUserId = models.ForeignKey('Profile', on_delete=models.DO_NOTHING , null=True)
 
-    PhotoPreview = models.ImageField(upload_to="events/preview", null=True)
-    PhotoMain = models.ImageField(upload_to="events/main", null=True)
+    PhotoPreview = models.ImageField(upload_to="events/preview", null=True, blank=True)
+    PhotoMain = models.ImageField(upload_to="events/main", null=True, blank=True)
     Description = models.TextField(default=None, null=True)
 
     def __str__(self):

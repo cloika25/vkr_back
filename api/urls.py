@@ -4,23 +4,26 @@ from . import views
 urlpatterns = [
     path('allUsers', views.allUsers),
     # PersonalData
-    path('cabinet', views.getPersonalData),
     path('editPersonalData', views.editPersonalData),
-    path('getName', views.getName),
+    path('profile', views.ProfileView.as_view()),
     # Events
-    path('events', views.allEvents),
+    path('events', views.EventsViews.as_view()),
+    path('event/<id>', views.EventView.as_view()),
+
+    path('participants', views.ParticipantsView.as_view()),
+
+    path('stages', views.StagesView.as_view()),
+
+    path('myRegistrations', views.UserRegistrationsView.as_view()),
+
     path('my_events', views.myEvents),
-    path('create_event', views.createEvent),
-    path('update_event', views.updateEvent),
-    path('remove_event', views.removeEvent),
-    path('event', views.getEvent),
     path('eventForEdit', views.getEventForEdit),
     # Avatar
     path('avatar', views.getAvatar),
     path('updateAvatar', views.updateAvatar),
     path('removeAvatar', views.removeAvatar),
     # Stages
-    path('stages', views.getStages),
+    # path('stages', views.getStages),
     path('createStage', views.createStage),
     path('updateStage', views.updateStage),
     path('removeStage', views.removeStage),

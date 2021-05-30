@@ -26,7 +26,7 @@ def getPersonalData(user):
         profile = Profile.objects.get(user_id=user.id)
     else:
         profile = profile.first()
-    profile = CabinetSerializer(profile).data
+    profile = ProfileSerializer(profile).data
     body = {
         "firstName": profile["user"]["first_name"],
         "lastName": profile["user"]["last_name"],
