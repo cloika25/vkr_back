@@ -75,12 +75,20 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vkr_db',
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'NAME': 'delqti9lakmpsc',
+        'USER': 'bocunegcoijhhb',
+        'PASSWORD': 'e076b8bbe4b71153328c487de9461766361c6255dc304b6ea0866250d556ea56',
+        'HOST': 'ec2-54-220-195-236.eu-west-1.compute.amazonaws.com',
         'PORT': '5432',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'vkr_db',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'admin',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'api/media')
@@ -114,6 +122,7 @@ USE_TZ = True
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8080',
     'http://localhost:8080',
+    'https://vkrfront.herokuapp.com',
 ]
 
 STATIC_URL = '/static/'
