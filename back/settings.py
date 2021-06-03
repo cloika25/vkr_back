@@ -15,7 +15,7 @@ SECRET_KEY = '+it90^j4qrhk0lvv+ij1qb&ozbvidvh#fnk&9gl_#%)t1(gig5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['mrmapp.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
