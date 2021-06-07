@@ -61,6 +61,8 @@ def editPersonalData(user, body):
     tempUser.first_name = body['firstName']
     tempUser.last_name = body['lastName']
     tempUser.email = body['email']
+    if not Profile.objects.filter(user_id=user.id).exists():
+        createProfile(user)
     tempProf = Profile.objects.get(user_id=user.id)
     tempProf.genderId = body['genderId']
     tempProf.birth_date = body['birthDate']

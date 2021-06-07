@@ -14,6 +14,9 @@ class RegistrationsModal(models.Model):
 class FormatStage(models.Model):
     name = models.CharField(max_length=100, default='', null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Stage(models.Model):
     StageName = models.CharField(max_length=200, default='')

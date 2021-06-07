@@ -14,10 +14,12 @@ import Services.stagesService as stageService
 from Services.util import fillResponse
 
 from .models import Event, Profile, RegistrationsModal, Stage
-from Serializers.Events import ShortEventSerializer, EventSerializer
+from Serializers.Events import ShortEventSerializer, EventSerializer, SaveEventSerializer
 from Serializers.Users import ProfileSerializer
 from Serializers.RegistrationModels import ListParticipants
 from Serializers.Stages import StageSerializer
+
+from rest_framework import status
 
 class EventsViews(GenericAPIView, ListModelMixin, CreateModelMixin):
     queryset = Event.objects.all()
@@ -26,7 +28,7 @@ class EventsViews(GenericAPIView, ListModelMixin, CreateModelMixin):
         if self.request.method == 'GET':
             return ShortEventSerializer
         else:
-            return EventSerializer
+            return SaveEventSerializer
 
     def get(self, request, *args, **kwargs):
         """
@@ -37,14 +39,22 @@ class EventsViews(GenericAPIView, ListModelMixin, CreateModelMixin):
         self.serializer_class = ShortEventSerializer
         return self.list(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        return serializer.save(AuthorUserId = Profile.objects.get(user_id=self.request.user.id))
+
     def post(self, request, *args, **kwargs):
         """
         Создание мероприятия
 
         EventSerializer
         """
-        self.serializer_class = EventSerializer
-        return self.create(request, *args, **kwargs)
+        requestData = request.data
+        serializer = self.get_serializer(data=requestData)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin):
     serializer_class = EventSerializer
@@ -84,10 +94,12 @@ class EventView(GenericAPIView, RetrieveModelMixin, UpdateModelMixin, DestroyMod
         """
         return self.destroy(request, *args, **kwargs)
 
+
 class ProfileView(GenericAPIView, ListModelMixin):
     serializer_class = ProfileSerializer
+
     def get_queryset(self):
-        queryset = Profile.objects.filter(user = self.request.user.id)
+        queryset = Profile.objects.filter(user=self.request.user.id)
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -101,11 +113,12 @@ class ProfileView(GenericAPIView, ListModelMixin):
         """
         return self.list(self, request, *args, **kwargs)
 
+
 class ParticipantsView(GenericAPIView, ListModelMixin):
     serializer_class = ListParticipants
 
     def get_queryset(self):
-        queryset = RegistrationsModal.objects.filter(EventId = self.request.query_params.get('EventId'))
+        queryset = RegistrationsModal.objects.filter(EventId=self.request.query_params.get('EventId'))
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -119,11 +132,12 @@ class ParticipantsView(GenericAPIView, ListModelMixin):
         """
         return self.list(self, request, *args, **kwargs)
 
+
 class StagesView(GenericAPIView, ListModelMixin, CreateModelMixin):
     serializer_class = StageSerializer
 
     def get_queryset(self):
-        queryset = Stage.objects.filter(EventId_id = self.request.query_params.get('EventId'))
+        queryset = Stage.objects.filter(EventId_id=self.request.query_params.get('EventId'))
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -145,6 +159,7 @@ class StagesView(GenericAPIView, ListModelMixin, CreateModelMixin):
         """
         return self.create(request, *args, **kwargs)
 
+
 class UserRegistrationsView(GenericAPIView, ListModelMixin):
     serializer_class = ListParticipants
 
@@ -162,6 +177,7 @@ class UserRegistrationsView(GenericAPIView, ListModelMixin):
         :return:
         """
         return self.list(self, request, *args, **kwargs)
+
 
 @api_view(['GET'])
 def allUsers(request):
